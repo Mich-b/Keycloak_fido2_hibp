@@ -49,3 +49,6 @@ sed -i 's/keystore-password="password"/keystore-password="<newpassword>"/g' stan
 sed -i 's/key-password="password"//g' standalone-ha.xml
 sed -i 's/generate-self-signed-certificate-host="localhost"//g' standalone-ha.xml
 ```
+
+# Troubleshooting
+* In case only the Yubikey seems to work, make sure that all signature algorithms are permitted by Keycloak
