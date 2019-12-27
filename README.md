@@ -1,7 +1,8 @@
 # Based on
 This work is based on
 * https://www.keycloak.org/docs/latest/server_admin/index.html#_webauthn
-* 
+* https://github.com/CACI-IIG/keycloak-hibp-password-policy 
+* https://github.com/thomasdarimont/keycloak
 
 # Get started
 ## (optional) Connect to AWS EC2 machine
