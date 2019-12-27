@@ -1,8 +1,16 @@
+# Goal
+This repository contains a Keycloak instance configured with password as first factor and WebAuthn (FIDO2) as second factor. The first factor is a password for which the guidelines mentioned in [NIST SP 800-63b](https://pages.nist.gov/800-63-3/sp800-63b.html) have been followed:
+* at least 8 characters in length
+* not allowed in case the password is present in a blacklist that contains values known to be commonly-used, expected, or compromised. In casu, the [HIBP API](https://haveibeenpwned.com/API/v3) is used. 
+
+WebAutn can also be used as the sole factor and hence replace passwords completely. However, since I also wanted to showcase the HIBP API, I'm  using WebAuthn as a second factor and password as a first factor. Note that, although functionally very similar, I'm not using U2F (FIDO1) here. WebAuthn (FIDO2) is used. 
+
 # Based on
 This work is based on
 * https://www.keycloak.org/docs/latest/server_admin/index.html#_webauthn
 * https://github.com/CACI-IIG/keycloak-hibp-password-policy 
 * https://github.com/thomasdarimont/keycloak
+* https://haveibeenpwned.com/API/v3
 
 # Get started
 ## (optional) Connect to AWS EC2 machine
