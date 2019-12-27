@@ -35,7 +35,7 @@ public class HibpPasswordPolicyProvider implements PasswordPolicyProvider {
                 return new PolicyError("The entered password is present in "+breachOccurrences+" data breaches and cannot be used");
             }
         } catch (ApiException e) {
-            LOG.error("Failed to lookup password with HIBP, allowing password", e);
+            LOG.error("Failed to lookup password with HIBP", e);
             return new PolicyError("The connection to the HIBP API failed, potentially we are being rate limited. Please contact michael.boeynaems at portasecura.com");
         }
         return null;

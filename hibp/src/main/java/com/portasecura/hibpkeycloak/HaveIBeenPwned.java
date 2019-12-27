@@ -41,12 +41,12 @@ public class HaveIBeenPwned {
         String uri = apiUrl + prefix;
         HttpGet httpGet = new HttpGet(uri);
 
-        String sha1Count = httpclient.execute(httpGet, createPrefixHandler(suffix));
-        return Integer.parseInt(sha1Count.substring(suffix.length() + 1));
+        String sha1Count = httpclient.execute(httpGet, createSuffixHandler(suffix));
+        return Integer.parseInt(sha1Count);
     }
 
-    private ResponseHandler<String> createPrefixHandler(String prefix) {
-        return new PrefixResponseHandler(prefix);
+    private ResponseHandler<String> createSuffixHandler(String suffix) {
+        return new SuffixResponseHandler(suffix);
     }
 
     private String getSha1(String input) {

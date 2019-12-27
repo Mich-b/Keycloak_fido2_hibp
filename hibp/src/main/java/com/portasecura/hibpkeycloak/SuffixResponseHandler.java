@@ -9,12 +9,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 
-public class PrefixResponseHandler implements ResponseHandler<String> {
+public class SuffixResponseHandler implements ResponseHandler<String> {
 
-    private String prefix;
+    private String suffix;
 
-    public PrefixResponseHandler(String prefix) {
-        this.prefix = prefix.toUpperCase();
+    public SuffixResponseHandler(String suffix) {
+        this.suffix = suffix.toUpperCase();
     }
 
     public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
@@ -23,15 +23,20 @@ public class PrefixResponseHandler implements ResponseHandler<String> {
             HttpEntity entity = response.getEntity();
             BufferedReader br = new BufferedReader(new InputStreamReader(entity.getContent()));
             try {
+                String occurrences = "0";
                 String inputLine;
+                // the range API returns a set of suffixes (the hash without the prefix). If the suffix of our password hash is present, it is compromised
                 while ((inputLine = br.readLine()) != null) {
-                    if (inputLine.startsWith(prefix)) {
+                    if (inputLine.startsWith(suffix)) {
+                        //password compromised, so return amount
                         br.close();
-                        return inputLine;
+                        occurrences = inputLine.split(":", 2)[1];
+                        return occurrences;
                     }
                 }
                 br.close();
-                throw new ClientProtocolException("No entry found for: " + prefix);
+                //password was not found in the list, so assuming it is not compromised, returning 0
+                return occurrences;
             } catch (IOException e) {
                 throw new ClientProtocolException("Exception thrown reading response", e);
             }
@@ -40,4 +45,6 @@ public class PrefixResponseHandler implements ResponseHandler<String> {
         }
 
     }
+
+
 }
