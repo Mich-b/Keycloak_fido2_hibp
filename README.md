@@ -5,6 +5,11 @@ This repository contains a Keycloak instance configured with password as first f
 
 WebAutn can also be used as the sole factor and hence replace passwords completely. However, since I also wanted to showcase the HIBP API, I'm  using WebAuthn as a second factor and password as a first factor. Note that, although functionally very similar, I'm not using U2F (FIDO1) here. WebAuthn (FIDO2) is used. 
 
+A client configured to use this Keycloak instance is available [here](https://github.com/Mich-b/Keycloak_client_oidc_spa).
+
+# Demo
+https://demo.michaelboeynaems.com
+
 # Based on
 This work is based on
 * https://www.keycloak.org/docs/latest/server_admin/index.html#_webauthn
