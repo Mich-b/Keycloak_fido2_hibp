@@ -35,23 +35,15 @@ make run
 
 ## creating the keycloak.jks file
 Since there is no out of the box way to integrate Let's Encrypt with Keycloak, I am not using Let's Encrypt (yet). 
-I followed https://www.keycloak.org/docs/latest/server_installation/index.html#enabling-ssl-https-for-the-keycloak-server
+I followed https://www.keycloak.org/docs/latest/server_installation/index.html#enabling-ssl-https-for-the-keycloak-server. 
+
+Stop all running containers
 
 ```
-sudo docker exec -it keycloak_fido_hibp /bin/sh
-keytool -genkey -alias login.michaelboeynaems.com -keyalg RSA -keystore keycloak.jks -keysize 2048
-keytool -certreq -alias login.michaelboeynaems.com -keystore keycloak.jks -ext SAN=dns:login.michaelboeynaems.com > keycloak.careq
-```
-
-Use an online provider which will hand you a free certificate (note: some providers like sslforfree expect `-----BEGIN CERTIFICATE REQUEST-----` instead of `-----BEGIN NEW CERTIFICATE REQUEST-----`)
-* copy the root.crt to the keycloak server
-* copy the intermediate.crt to the keycloak server
-* copy the certificate.crt to the keycloak server
-
-```
-keytool -import -keystore keycloak.jks -file root.crt -alias rootca
-keytool -import -keystore keycloak.jks -file intermediate.crt -alias intermediateca
-keytool -import -alias login.michaelboeynaems.com -keystore keycloak.jks -file certificate.crt
+sudo certbot certonly --standalone -d login.michaelboeynaems.com --email contact
+@portasecura.com
+openssl pkcs12 -export -in /etc/letsencrypt/live/login.michaelboeynaems.com/fullchain.pem -inkey /etc/letsencrypt/live/login.michaelboeynaems.com/privkey.pem -out /etc/letsencrypt/live/login.michaelboeynaems.com/pkcs.p12 -name login.michaelboeynaems.com
+keytool -importkeystore -destkeystore keycloak.jks -srckeystore /etc/letsencrypt/live/login.michaelboeynaems.com/pkcs.p12 -srcstoretype PKCS12 -alias login.michaelboeynaems.com
 ```
 
 ## creating the standalone-ha.xml file
@@ -62,6 +54,14 @@ sed -i 's/alias="server"/alias="login.michaelboeynaems.com"/g' standalone-ha.xml
 sed -i 's/keystore-password="password"/keystore-password="<newpassword>"/g' standalone-ha.xml
 sed -i 's/key-password="password"//g' standalone-ha.xml
 sed -i 's/generate-self-signed-certificate-host="localhost"//g' standalone-ha.xml
+```
+
+# Clean up everything
+
+```
+sudo -s
+docker stop $(docker ps -a -q)
+docker rm -f $(docker ps -a -q); docker rmi $(docker images -q)
 ```
 
 # Troubleshooting

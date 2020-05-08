@@ -5,7 +5,7 @@ RUN mvn install
 COPY hibp/src src
 RUN mvn clean package
 
-FROM jboss/keycloak:8.0.1
+FROM jboss/keycloak:10.0.0
 COPY --from=build /opt/build/target/keycloak-hibp-policy*.jar /opt/jboss/keycloak/standalone/deployments/hibp-password-policy.jar
 COPY --chown=jboss:root secrets/keycloak.jks /opt/jboss/keycloak/standalone/configuration/
 COPY --chown=jboss:root secrets/standalone-ha.xml /opt/jboss/keycloak/standalone/configuration/
