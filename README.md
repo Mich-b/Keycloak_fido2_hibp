@@ -40,10 +40,22 @@ I followed https://www.keycloak.org/docs/latest/server_installation/index.html#e
 Stop all running containers
 
 ```
-sudo certbot certonly --standalone -d login.michaelboeynaems.com --email contact
-@portasecura.com
+sudo certbot certonly --standalone -d login.michaelboeynaems.com --email contact@portasecura.com
 openssl pkcs12 -export -in /etc/letsencrypt/live/login.michaelboeynaems.com/fullchain.pem -inkey /etc/letsencrypt/live/login.michaelboeynaems.com/privkey.pem -out /etc/letsencrypt/live/login.michaelboeynaems.com/pkcs.p12 -name login.michaelboeynaems.com
 keytool -importkeystore -destkeystore keycloak.jks -srckeystore /etc/letsencrypt/live/login.michaelboeynaems.com/pkcs.p12 -srcstoretype PKCS12 -alias login.michaelboeynaems.com
+```
+
+## Quick renew of cert on AWS machine
+```
+sudo -s
+docker stop $(docker ps -a -q)
+certbot certonly --standalone -d login.michaelboeynaems.com --email contact@portasecura.com
+openssl pkcs12 -export -in /etc/letsencrypt/live/login.michaelboeynaems.com/fullchain.pem -inkey /etc/letsencrypt/live/login.michaelboeynaems.com/privkey.pem -out /etc/letsencrypt/live/login.michaelboeynaems.com/pkcs.p12 -name login.michaelboeynaems.com
+exit
+cd /home/ubuntu/Keycloak_fido2_hibp/secrets
+keytool -importkeystore -destkeystore keycloak.jks -srckeystore /etc/letsencrypt/live/login.michaelboeynaems.com/pkcs.p12 -srcstoretype PKCS12 -alias login.michaelboeynaems.com
+cd ..
+make run
 ```
 
 ## creating the standalone-ha.xml file
