@@ -8,8 +8,8 @@ WebAutn can also be used as the sole factor and hence replace passwords complete
 A client configured to use this Keycloak instance is available [here](https://github.com/Mich-b/Keycloak_client_oidc_spa).
 
 # Policies
-- When a refresh token is used, it must adhere to https://tools.ietf.org/html/draft-ietf-oauth-browser-based-apps-07#section-8
-- Silent renew can also be used, but won't work when third party cookies are disabled. This is by default the case in Safari. Firefox still allows them by default but this may change in the future. To test it in Firefox with all third party cookies disabled use https://support.mozilla.org/en-US/kb/disable-third-party-cookies
+- UNTESTED: When a refresh token is used, it must adhere to https://tools.ietf.org/html/draft-ietf-oauth-browser-based-apps-07#section-8
+- TESTED: Silent renew can also be used, but won't work when third party cookies are disabled. This is by default the case in Safari. Firefox still allows them by default but this may change in the future. To test it in Firefox with all third party cookies disabled use https://support.mozilla.org/en-US/kb/disable-third-party-cookies
 
 # Demo
 - currently offline: https://demo.michaelboeynaems.com
