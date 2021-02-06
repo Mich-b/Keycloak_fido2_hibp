@@ -7,8 +7,13 @@ WebAutn can also be used as the sole factor and hence replace passwords complete
 
 A client configured to use this Keycloak instance is available [here](https://github.com/Mich-b/Keycloak_client_oidc_spa).
 
+# Policies
+- When a refresh token is used, it must adhere to https://tools.ietf.org/html/draft-ietf-oauth-browser-based-apps-07#section-8
+- Silent renew can also be used, but won't work when third party cookies are disabled. This is by default the case in Safari. Firefox still allows them by default but this may change in the future. To test it in Firefox with all third party cookies disabled use https://support.mozilla.org/en-US/kb/disable-third-party-cookies
+
 # Demo
-https://demo.michaelboeynaems.com
+- currently offline: https://demo.michaelboeynaems.com
+- host it on your own
 
 # Based on
 This work is based on
@@ -18,9 +23,6 @@ This work is based on
 * https://haveibeenpwned.com/API/v3
 
 # Get started
-## (optional) Connect to AWS EC2 machine
-ssh -i .ssh/mboeynaems_aws.pem ubuntu@ec2-52-17-213-101.eu-west-1.compute.amazonaws.com
-
 ## start the container
 ```
 git clone https://github.com/Mich-b/Keycloak_fido2_hibp.git
@@ -33,36 +35,53 @@ cp ~/standalone-ha.xml secrets/standalone-ha.xml
 make run
 ```
 
-## creating the keycloak.jks file
+## When hosting for myself
+### Set up hosts file
+192.168.119.145	login.portasecura.com
+
+### create the keycloak.jks file (selfhosting only)
+- Create a certificate and key using a local CA and move the key and crt to ./secrets
+- Copy the intermediate and root in the crt file, in order after the newly created one
+- In the following commands, always use a password
+
+Stop all running containers
+
+```
+openssl pkcs12 -export -in ./secrets/keycloak.crt -inkey ./secrets/keycloak.key -out ./secrets/keycloak.p12 -name login.portasecura.com
+keytool -importkeystore -destkeystore ./secrets/keycloak.jks -srckeystore ./secrets/keycloak.p12 -srcstoretype PKCS12 -alias login.portasecura.com
+```
+
+## When hosting for the public
+### create the keycloak.jks file (public demo only)
 Since there is no out of the box way to integrate Let's Encrypt with Keycloak, I am not using Let's Encrypt (yet). 
 I followed https://www.keycloak.org/docs/latest/server_installation/index.html#enabling-ssl-https-for-the-keycloak-server. 
 
 Stop all running containers
 
 ```
-sudo certbot certonly --standalone -d login.michaelboeynaems.com --email contact@portasecura.com
-openssl pkcs12 -export -in /etc/letsencrypt/live/login.michaelboeynaems.com/fullchain.pem -inkey /etc/letsencrypt/live/login.michaelboeynaems.com/privkey.pem -out /etc/letsencrypt/live/login.michaelboeynaems.com/pkcs.p12 -name login.michaelboeynaems.com
-keytool -importkeystore -destkeystore keycloak.jks -srckeystore /etc/letsencrypt/live/login.michaelboeynaems.com/pkcs.p12 -srcstoretype PKCS12 -alias login.michaelboeynaems.com
+sudo certbot certonly --standalone -d login.portasecura.com --email contact@portasecura.com
+openssl pkcs12 -export -in /etc/letsencrypt/live/login.portasecura.com/fullchain.pem -inkey /etc/letsencrypt/live/login.portasecura.com/privkey.pem -out /etc/letsencrypt/live/login.portasecura.com/pkcs.p12 -name login.portasecura.com
+keytool -importkeystore -destkeystore keycloak.jks -srckeystore /etc/letsencrypt/live/login.portasecura.com/pkcs.p12 -srcstoretype PKCS12 -alias login.portasecura.com
 ```
 
-## Quick renew of cert on AWS machine
+### Quick renew of cert on AWS machine (public demo only)
 ```
 sudo -s
 docker stop $(docker ps -a -q)
-certbot certonly --standalone -d login.michaelboeynaems.com --email contact@portasecura.com
-openssl pkcs12 -export -in /etc/letsencrypt/live/login.michaelboeynaems.com/fullchain.pem -inkey /etc/letsencrypt/live/login.michaelboeynaems.com/privkey.pem -out /etc/letsencrypt/live/login.michaelboeynaems.com/pkcs.p12 -name login.michaelboeynaems.com
+certbot certonly --standalone -d login.portasecura.com --email contact@portasecura.com
+openssl pkcs12 -export -in /etc/letsencrypt/live/login.portasecura.com/fullchain.pem -inkey /etc/letsencrypt/live/login.portasecura.com/privkey.pem -out /etc/letsencrypt/live/login.portasecura.com/pkcs.p12 -name login.portasecura.com
 exit
 cd /home/ubuntu/Keycloak_fido2_hibp/secrets
-keytool -importkeystore -destkeystore keycloak.jks -srckeystore /etc/letsencrypt/live/login.michaelboeynaems.com/pkcs.p12 -srcstoretype PKCS12 -alias login.michaelboeynaems.com
+keytool -importkeystore -destkeystore keycloak.jks -srckeystore /etc/letsencrypt/live/login.portasecura.com/pkcs.p12 -srcstoretype PKCS12 -alias login.portasecura.com
 cd ..
 make run
 ```
 
-## creating the standalone-ha.xml file
+## create the standalone-ha.xml file
 Start from the orignal standalone-ha.xml file, and apply the following changes:
 ```
 sed -i 's/application.keystore/keycloak.jks/g' standalone-ha.xml
-sed -i 's/alias="server"/alias="login.michaelboeynaems.com"/g' standalone-ha.xml
+sed -i 's/alias="server"/alias="login.portasecura.com"/g' standalone-ha.xml
 sed -i 's/keystore-password="password"/keystore-password="<newpassword>"/g' standalone-ha.xml
 sed -i 's/key-password="password"//g' standalone-ha.xml
 sed -i 's/generate-self-signed-certificate-host="localhost"//g' standalone-ha.xml
