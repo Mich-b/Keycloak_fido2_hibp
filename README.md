@@ -15,6 +15,26 @@ A client configured to use this Keycloak instance is available [here](https://gi
 - currently offline: https://demo.michaelboeynaems.com
 - host it on your own
 
+# About token lifetimes
+This repo is also used to test token refresh in single page applications. Typically, two refresh strategies can be used:
+- silent renew (using an iframe and third-party cookies)
+- refresh token (using XHR post)
+
+Keycloak currently issues a refresh token by default when using the authorization code flow (even when offline_access is disabled). This cannot be disabled.
+
+On the other hand, our SPA uses oidc-js, a client OIDC library which tries to do a refresh using the refresh token if such a token is available, before trying a silent renew. 
+
+Combining the default behaviour of Keycloak (issuing a refresh token) with that of oidc-js, this always leads to a renew based on the refresh token. However, for training purposes we wish to also be able to test the silent renew based on iframe (and the impact of blocking third party cookies). 
+
+The following was therefore set up:
+* refresh token expires after 1 minute
+* access token expires after 5 minutes
+* silent renew starts after 200 seconds before AT expiry (when using these defaults that is after 1 minute and 30 seconds, so after the RT has expired).
+
+This triggers the oidc-js library to try a refresh based on silent renew. Of course, should you wish to try out the refresh based on the refresh token, increase the expiry time of the refresh token:
+* Keycloak -> Realm settings -> Token -> SSO Session Idle
+
+
 # Based on
 This work is based on
 * https://www.keycloak.org/docs/latest/server_admin/index.html#_webauthn
