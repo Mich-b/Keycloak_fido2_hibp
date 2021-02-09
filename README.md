@@ -27,9 +27,9 @@ On the other hand, our SPA uses oidc-js, a client OIDC library which tries to do
 Combining the default behaviour of Keycloak (issuing a refresh token) with that of oidc-js, this always leads to a renew based on the refresh token. However, for training purposes we wish to also be able to test the silent renew based on iframe (and the impact of blocking third party cookies). 
 
 The following was therefore set up:
-* refresh token expires after 1 minute
+* button to remove the refresh token. You have 30 seconds to press it to ensure the refresh token is deleted before the renewal kicks in
 * access token expires after 5 minutes
-* silent renew starts after 200 seconds before AT expiry (when using these defaults that is after 1 minute and 30 seconds, so after the RT has expired).
+* silent renew starts after 270 seconds before AT expiry (when using these defaults that is after 30 seconds, so after the RT has expired).
 
 This triggers the oidc-js library to try a refresh based on silent renew. Of course, should you wish to try out the refresh based on the refresh token, increase the expiry time of the refresh token:
 * Keycloak -> Realm settings -> Token -> SSO Session Idle
