@@ -81,7 +81,7 @@ Stop all running containers
 ```
 sudo certbot certonly --standalone -d login.portasecura.com --email contact@portasecura.com
 openssl pkcs12 -export -in /etc/letsencrypt/live/login.portasecura.com/fullchain.pem -inkey /etc/letsencrypt/live/login.portasecura.com/privkey.pem -out /etc/letsencrypt/live/login.portasecura.com/pkcs.p12 -name login.portasecura.com
-keytool -importkeystore -destkeystore keycloak.jks -srckeystore /etc/letsencrypt/live/login.portasecura.com/pkcs.p12 -srcstoretype PKCS12 -alias login.portasecura.com
+keytool -importkeystore -destkeystore ./secrets/keycloak.jks -srckeystore /etc/letsencrypt/live/login.portasecura.com/pkcs.p12 -srcstoretype PKCS12 -alias login.portasecura.com
 ```
 
 ### Quick renew of cert on AWS machine (public demo only)
