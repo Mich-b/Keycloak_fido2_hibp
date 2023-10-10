@@ -13,7 +13,7 @@ A client configured to use this Keycloak instance is available [here](https://gi
 
 # Demo
 - currently offline: https://demo.michaelboeynaems.com
-- host it on your own
+- host it on your own and browse to https://0.0.0.0/auth/realms/WebAuthnTest/account/
 
 # About token lifetimes
 This repo is also used to test token refresh in single page applications. Typically, two refresh strategies can be used:
